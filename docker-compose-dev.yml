@@ -1,0 +1,25 @@
+version: "3"
+services:
+  nats:
+    image: nats
+    ports:
+      - "8222:8222"
+  random-number-server:
+    image: aidandj/nats-random-number-guesser-server
+    command: "python server.py"
+  random-number-client-cpp:
+    image: client
+    build: .
+    command: tail -f /dev/null
+    cap_add: 
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    volumes: 
+      - .:/usr/src/nats
+
+
+networks:
+  default:
+    external:
+      name: nats
